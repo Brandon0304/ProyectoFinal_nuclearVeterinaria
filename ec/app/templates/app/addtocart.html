@@ -1,0 +1,76 @@
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Carrito{% endblock title %}
+{% block main-content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+    {% if cart %}
+    <h1 class="text-center mb-5">Carrito de Compras</h1>
+    <div class="col-12 col-md-10">
+        <div class="card mb-4">
+            <div class="card-body">
+                {% for item in cart %}
+                <div class="row align-items-center py-3">
+                    <div class="col-sm-3 text-center">
+                        <img src="{{item.products.product_image.url}}" alt="" class="img-fluid img-thumbnail shadow-sm" style="max-height: 150px; max-width: 150px;" />
+                    </div>
+                    <div class="col-sm-7">
+                        <div>
+                            <h5>{{item.products.title}}</h5>
+                            <p class="mb-2 text-muted small">{{item.products.description}}</p>
+                            <div class="my-3">
+                                <label for="quantity" class="me-2">Cantidad:</label>
+                                <a class="minus-cart btn px-2" pid={{item.products.id}}><i class="fas fa-minus-square fa-lg"></i></a>
+                                <span id="quantity" class="px-2">{{item.quantity}}</span>
+                                <a class="plus-cart btn px-2" pid={{item.products.id}}><i class="fas fa-plus-square fa-lg"></i></a>
+                            </div>
+                            <div class="mt-3">
+                                <a href="#" class="remove-cart btn btn-sm btn-secondary" pid={{item.products.id}}>Remover Producto</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 text-end">
+                        <p class="h5"><strong>COP. {{item.products.discounted_price}}</strong></p>
+                    </div>
+                </div>
+                {% if not forloop.last %}
+                <hr class="text-muted">
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Resumen del Carrito -->
+        <div class="card">
+            <div class="card-body">
+                <h3 class="mb-3">Total a pagar</h3>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                        <span>Cantidad</span>
+                        <span id="amount"><strong>COP. {{amount}}</strong></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span>Valor del Envío</span>
+                        <span><strong>COP. 4000.0</strong></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                        <div>
+                            <strong>Total</strong> <small>(con envío)</small>
+                        </div>
+                        <span id="totalamount"><strong>Rs. {{totalamount}}</strong></span>
+                    </li>
+                </ul>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'checkout' %}" class="btn btn-primary py-2">Ordenar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center">
+        <h1 class="mb-5">Cart is Empty</h1>
+    </div>
+    {% endif %}
+    </div>
+</div>
+{% endblock main-content %}
