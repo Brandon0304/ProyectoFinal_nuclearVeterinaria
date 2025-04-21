@@ -1,46 +1,171 @@
 {% extends "app/base.html" %}
 {% load static %}
-{% block title %}About{% endblock title %}
+
+{% block title %}Contáctanos{% endblock title %}
 
 {% block banner-slider %}
 <div id="carouselExampleIndicators" class="carousel slide">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="{% static 'app/images/banners/b1.jpg' %}" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'app/images/banners/b2.jpg' %}" class="d-block w-100" alt="...">
-      </div>
-      <div class="carousel-item">
-        <img src="{% static 'app/images/banners/b3.jpg' %}" class="d-block w-100" alt="...">
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
   </div>
+  <div class="carousel-inner">
+    <div class="carousel-item active">
+      <img src="{% static 'app/images/banners/b1.jpg' %}" class="d-block w-100" alt="Banner 1">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'app/images/banners/b2.jpg' %}" class="d-block w-100" alt="Banner 2">
+    </div>
+    <div class="carousel-item">
+      <img src="{% static 'app/images/banners/b3.jpg' %}" class="d-block w-100" alt="Banner 3">
+    </div>
+  </div>
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
+</div>
 {% endblock banner-slider %}
 
 {% block main-content %}
-  <div class="container mt-3">
-    <br>
-    <h2 class="text-center">Contáctanos</h2>
-    <br>
-    <div class="row container">
-        <p class="fs-4 text-center">Dirección : </p>
-        <p class="fs-4 text-center">Contacto : </p>
-        <p class="fs-4 text-center">Correo Electrónico : </p>
+<div class="container my-5">
+  <div class="row">
+    <div class="col-lg-8 mx-auto">
+      
+      <div class="card shadow-lg">
+        <div class="card-body p-5">
+          <h2 class="text-center mb-4">Contáctanos</h2>
+          <form id="contact-form" class="needs-validation" novalidate>
+            
+            <div class="mb-3">
+              <label for="name" class="form-label">Nombre Completo</label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Ingrese su nombre completo" required>
+              <div class="invalid-feedback">
+                Por favor, ingrese su nombre
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo Electrónico</label>
+              <input type="email" class="form-control" id="email" name="email" placeholder="nombre@ejemplo.com" required>
+              <div class="invalid-feedback">
+                Por favor, ingrese un correo electrónico válido
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="message" class="form-label">Mensaje</label>
+              <textarea class="form-control" id="message" name="message" rows="5" placeholder="Escriba su mensaje aquí" required></textarea>
+              <div class="invalid-feedback">
+                Por favor, escriba su mensaje
+              </div>
+            </div>
+
+            <div id="form-message" class="mb-3"></div>
+
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
+              Enviar Mensaje
+            </button>
+
+          </form>
+        </div>
+      </div>
+
+      <div class="card mt-4 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title text-center mb-3">Información de Contacto</h5>
+          <div class="row text-center">
+            <div class="col-md-4">
+              <i class="fas fa-map-marker-alt text-primary mb-2"></i>
+              <p class="mb-0">Dirección</p>
+              <small class="text-muted">Calle Ejemplo 123, Ciudad, País</small>
+            </div>
+            <div class="col-md-4">
+              <i class="fas fa-phone text-primary mb-2"></i>
+              <p class="mb-0">Teléfono</p>
+              <small class="text-muted">+57 123 456 7890</small>
+            </div>
+            <div class="col-md-4">
+              <i class="fas fa-envelope text-primary mb-2"></i>
+              <p class="mb-0">Correo</p>
+              <small class="text-muted">contacto@pharmaplus.com</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
-<br><br>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Inicializar EmailJS (reemplaza con tus credenciales)
+  emailjs.init('YOUR_USER_ID');
+
+  const form = document.getElementById('contact-form');
+  const formMessage = document.getElementById('form-message');
+
+  // Validación de Bootstrap
+  (function() {
+    'use strict';
+    form.addEventListener('submit', function(event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  })();
+
+  form.addEventListener('submit', function(event) {
+    event.preventDefault();
+    if (!form.checkValidity()) return;
+
+    // Mensaje de envío
+    formMessage.innerHTML = `
+      <div class="alert alert-info text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Enviando...</span>
+        </div>
+        Enviando mensaje...
+      </div>
+    `;
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    emailjs.send('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', {
+      from_name: name,
+      from_email: email,
+      message: message
+    }).then(
+      function(response) {
+        formMessage.innerHTML = `
+          <div class="alert alert-success text-center">
+            ¡Mensaje enviado exitosamente! Nos pondremos en contacto pronto.
+          </div>
+        `;
+        form.reset();
+        form.classList.remove('was-validated');
+      },
+      function(error) {
+        formMessage.innerHTML = `
+          <div class="alert alert-danger text-center">
+            Error al enviar el mensaje. Por favor, inténtelo de nuevo.
+          </div>
+        `;
+        console.error('EmailJS Error:', error);
+      }
+    );
+  });
+});
+</script>
 {% endblock main-content %}

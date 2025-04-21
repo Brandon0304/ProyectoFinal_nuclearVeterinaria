@@ -64,8 +64,8 @@
                 <a class="nav-link text-white" href="{% url 'contact' %}">Contáctanos</a>
               </li>
             </ul>
-            <form class="d-flex" role="search">
-              <input class="form-control me-2" type="search" placeholder="..........." aria-label="Search">
+            <form class="d-flex" role="search" action="{% url 'search_products' %}" method="GET">
+              <input class="form-control me-2" type="search" name="search" placeholder="Buscar productos..." aria-label="Search" required>
               <button class="btn btn-outline-success text-white" type="submit">Buscar</button>
             </form>
           </div>
@@ -88,10 +88,7 @@
                 </ul>
             </li>
             <li class="nav-item mx-2">
-                <a href="#" class="nav-link text-white">Carrito</a>
-            </li>
-            <li class="nav-item mx-2">
-              <a href="#" class="nav-link text-white">Favoritos</a>
+                <a href="{% url 'showcart' %}" class="nav-link text-white">Carrito</a>
             </li>
             {% else %}
             <li class="nav-item mx-2">

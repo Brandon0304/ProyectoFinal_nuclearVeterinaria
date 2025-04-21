@@ -111,8 +111,16 @@ def add_to_cart(request):
     
     product = Product.objects.get(id=product_id)
     
-    # Usar 'products' en lugar de 'product'
-    Cart(user=user, products=product).save()
+    # Verificar si el producto ya está en el carrito
+    cart_item = Cart.objects.filter(user=user, products=product).first()
+    
+    if cart_item:
+        # Si ya existe, incrementar la cantidad
+        cart_item.quantity += 1
+        cart_item.save()
+    else:
+        # Si no existe, crear nuevo item
+        Cart(user=user, products=product).save()
     
     return redirect("/cart")
 
@@ -127,25 +135,110 @@ def show_cart(request):
     return render(request, 'app/addtocart.html', locals())
 
 class checkout(View):
-    def get(self,request):
-        user=request.user
-        add=Customer.objects.filter(user=user)
-        cart_items=Cart.objects.filter(user=user)
-        famount = 0
+    def get(self, request):
+        user = request.user
+        add = Customer.objects.filter(user=user)
+        cart_items = Cart.objects.filter(user=user)
+        
+        # Verificar si hay elementos en el carrito
+        if not cart_items.exists():
+            messages.warning(request, "No tienes productos en el carrito")
+            return redirect("showcart")
+        
+        # Verificar si hay direcciones registradas
+        if not add.exists():
+            messages.warning(request, "Por favor agrega una dirección antes de continuar")
+            return redirect("profile")
+        
+        # Calcular montos
+        amount = 0
         for p in cart_items:
             value = p.quantity * p.products.discounted_price
-            famount = famount + value
-        totalamount = famount + 4000.0
-        return render(request, 'app/checkout.html',locals())
+            amount = amount + value
+        totalamount = amount + 4000.0
+        
+        context = {
+            'add': add,
+            'cart_items': cart_items,
+            'amount': amount,
+            'totalamount': totalamount
+        }
+        
+        return render(request, 'app/checkout.html', context)
+    
+    def post(self, request):
+        customer_id = request.POST.get('custid')
+        
+        if not customer_id:
+            messages.warning(request, "Por favor selecciona una dirección de envío")
+            return redirect('checkout')
+            
+        # Verificar que el cliente existe
+        try:
+            customer = Customer.objects.get(id=customer_id, user=request.user)
+        except Customer.DoesNotExist:
+            messages.warning(request, "Dirección de envío no encontrada")
+            return redirect('checkout')
+        
+        # Redirigir a la página de pago
+        return redirect(f"/payment/?customer_id={customer_id}")
 
 
 
 def plus_cart(request):
     if request.method == 'GET':
-        prod_id=request.GET['prod_id']
-        c = Cart.objects.get(Q(products=prod_id) & Q(user=request.user))
-        c.quantity+=1
-        c.save()
+        prod_id = request.GET['prod_id']
+        # Usar filter().first() en lugar de get()
+        c = Cart.objects.filter(Q(products=prod_id) & Q(user=request.user)).first()
+        if c:
+            c.quantity += 1
+            c.save()
+            user = request.user
+            cart = Cart.objects.filter(user=user)
+            amount = 0
+            for p in cart:
+                value = p.quantity * p.products.discounted_price
+                amount = amount + value
+            totalamount = amount + 4000.0
+            data = {
+                'quantity': c.quantity,
+                'amount': amount,
+                'totalamount': totalamount
+            }
+            return JsonResponse(data)
+        return JsonResponse({'error': 'Producto no encontrado en el carrito'})
+    
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        # Usar filter().first() en lugar de get()
+        c = Cart.objects.filter(Q(products=prod_id) & Q(user=request.user)).first()
+        if c:
+            if c.quantity > 1:
+                c.quantity -= 1
+                c.save()
+            user = request.user
+            cart = Cart.objects.filter(user=user)
+            amount = 0
+            for p in cart:
+                value = p.quantity * p.products.discounted_price
+                amount = amount + value
+            totalamount = amount + 4000.0
+            data = {
+                'quantity': c.quantity,
+                'amount': amount,
+                'totalamount': totalamount
+            }
+            return JsonResponse(data)
+        return JsonResponse({'error': 'Producto no encontrado en el carrito'})
+    
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        # Usar filter() en lugar de get() y eliminar todos los duplicados
+        cart_items = Cart.objects.filter(Q(products=prod_id) & Q(user=request.user))
+        cart_items.delete()  # Eliminar todos los elementos duplicados
+        
         user = request.user
         cart = Cart.objects.filter(user=user)
         amount = 0
@@ -153,48 +246,26 @@ def plus_cart(request):
             value = p.quantity * p.products.discounted_price
             amount = amount + value
         totalamount = amount + 4000.0
-        #print(prod_id)
-        data={
-            'quantity':c.quantity,
-            'amount':amount,
-            'totalamount':totalamount
+        data = {
+            'amount': amount,
+            'totalamount': totalamount
         }
         return JsonResponse(data)
+
+def search_products(request):
+    query = request.GET.get('search', '')
+    if query:
+        # Buscar productos que coincidan con el título o la descripción
+        products = Product.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )
+    else:
+        products = []
     
-def minus_cart(request):
-    if request.method == 'GET':
-        prod_id=request.GET['prod_id']
-        c = Cart.objects.get(Q(products=prod_id) & Q(user=request.user))
-        c.quantity-=1
-        c.save()
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.products.discounted_price
-            amount = amount + value
-        totalamount = amount + 40
-        data={
-            'quantity':c.quantity,
-            'amount':amount,
-            'totalamount':totalamount
-        }
-        return JsonResponse(data)
-    
-def remove_cart(request):
-    if request.method == 'GET':
-        prod_id=request.GET['prod_id']
-        c = Cart.objects.get(Q(products=prod_id) & Q(user=request.user))
-        c.delete()
-        user = request.user
-        cart = Cart.objects.filter(user=user)
-        amount = 0
-        for p in cart:
-            value = p.quantity * p.products.discounted_price
-            amount = amount + value
-        totalamount = amount + 40
-        data={
-            'amount':amount,
-            'totalamount':totalamount
-        }
-        return JsonResponse(data)
+    return render(request, 'app/search_results.html', {
+        'products': products,
+        'query': query
+    })
+
+
+
