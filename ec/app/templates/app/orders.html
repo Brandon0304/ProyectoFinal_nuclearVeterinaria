@@ -1,0 +1,98 @@
+<!-- app/templates/app/orders.html -->
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Mis Pedidos{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Mis Pedidos</h2>
+            
+            {% if orders_by_payment %}
+                {% for order_group in orders_by_payment %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <h5 class="mb-0">Pedido #{{ order_group.payment.id }}</h5>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <span class="badge 
+                                        {% if order_group.payment.epayco_status == 'Aceptada' %}bg-success
+                                        {% elif order_group.payment.epayco_status == 'Pendiente' %}bg-warning
+                                        {% else %}bg-danger{% endif %}">
+                                        {{ order_group.payment.epayco_status|default:"Procesando" }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <p><strong>Fecha:</strong> {{ order_group.date|date:"d/m/Y H:i" }}</p>
+                                    <p><strong>Referencia:</strong> {{ order_group.payment.epayco_ref_code }}</p>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <p><strong>Total:</strong> COP {{ order_group.total }}</p>
+                                </div>
+                            </div>
+                            
+                            <h6 class="border-bottom pb-2 mb-3">Productos</h6>
+                            
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Producto</th>
+                                            <th>Imagen</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio</th>
+                                            <th>Subtotal</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in order_group.items %}
+                                            <tr>
+                                                <td>{{ item.product.title }}</td>
+                                                <td>
+                                                    <img src="{{ item.product.product_image.url }}" alt="{{ item.product.title }}" 
+                                                         class="img-thumbnail" style="max-height: 50px;">
+                                                </td>
+                                                <td>{{ item.quantity }}</td>
+                                                <td>COP {{ item.product.discounted_price }}</td>
+                                                <td>COP {{ item.total_cost }}</td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        {% if item.status == 'Aceptado' %}
+                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 20%;">Aceptado</div>
+                                                        {% elif item.status == 'Empacado' %}
+                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 40%;">Empacado</div>
+                                                        {% elif item.status == 'En Camino' %}
+                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 60%;">En Camino</div>
+                                                        {% elif item.status == 'Entregado' %}
+                                                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%;">Entregado</div>
+                                                        {% elif item.status == 'Cancelado' %}
+                                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 100%;">Cancelado</div>
+                                                        {% else %}
+                                                            <div class="progress-bar bg-warning" role="progressbar" style="width: 10%;">Pendiente</div>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    <p class="mb-0">No tienes pedidos aún. <a href="/">Empieza a comprar</a></p>                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock main-content %}

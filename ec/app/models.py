@@ -79,3 +79,41 @@ class Cart(models.Model):
     def total_cost(self):
         return self.quantity * self.products.discounted_price
 
+
+# app/models.py
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    amount = models.FloatField()
+    # Campos para ePayco
+    epayco_ref_code = models.CharField(max_length=100, blank=True, null=True)
+    epayco_transaction_id = models.CharField(max_length=100, blank=True, null=True)
+    epayco_status = models.CharField(max_length=50, blank=True, null=True)
+    paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Pago {self.id} de {self.user.username}"
+    
+
+
+STATUS_CHOICES = (
+    ('Aceptado', 'Aceptado'),
+    ('Empacado', 'Empacado'),
+    ('En Camino', 'En Camino'),
+    ('Entregado', 'Entregado'),
+    ('Cancelado', 'Cancelado'),
+    ('Pendiente', 'Pendiente'),
+)
+
+class OrderPlaced(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    ordered_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='Pendiente')
+    payment = models.ForeignKey(Payment, on_delete=models.CASCADE, default="")
+    
+    @property
+    def total_cost(self):
+        return self.quantity * self.product.discounted_price

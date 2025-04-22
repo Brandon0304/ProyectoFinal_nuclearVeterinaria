@@ -128,3 +128,11 @@ LOGIN_REDIRECT_URL = '/profile/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+
+# ec/settings.py
+
+# Configuración de ePayco
+EPAYCO_PUBLIC_KEY = 'ada0f88cb259011a74ca876133049dd2'  # Reemplaza con tu clave pública de ePayco
+EPAYCO_TEST = True  # Cambia a False en producción
+EPAYCO_RESPONSE_URL = 'https://tu-dominio.com/payment/response/'
+EPAYCO_CONFIRMATION_URL = 'https://tu-dominio.com/payment/confirmation/'

@@ -15,6 +15,8 @@ urlpatterns = [
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('address/', views.address, name='address'),
     path('updateAddress/<int:pk>', views.updateAddress.as_view(), name='updateAddress'),
+    path('orders/', views.orders, name='orders'),
+    
     
     path('add-to-cart/', views.add_to_cart, name='add-to-cart'),
     path('cart/', views.show_cart, name='showcart'),
@@ -41,6 +43,13 @@ urlpatterns = [
     path('password-reset-complete/', auth_view.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html'), name='password_reset_complete'),
     
     path('search/', views.search_products, name='search_products'),
+    
+    
+    # app/urls.py
+
+path('payment/', views.PaymentView.as_view(), name='payment'),
+path('payment/response/', views.payment_response, name='payment_response'),
+path('payment/confirmation/', views.payment_confirmation, name='payment_confirmation'),
     
     
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -134,54 +134,29 @@ def show_cart(request):
     totalamount = amount + 4000.0 #4000.0 para gastos de envio
     return render(request, 'app/addtocart.html', locals())
 
+# app/views.py
 class checkout(View):
     def get(self, request):
         user = request.user
         add = Customer.objects.filter(user=user)
         cart_items = Cart.objects.filter(user=user)
-        
-        # Verificar si hay elementos en el carrito
-        if not cart_items.exists():
-            messages.warning(request, "No tienes productos en el carrito")
-            return redirect("showcart")
-        
-        # Verificar si hay direcciones registradas
-        if not add.exists():
-            messages.warning(request, "Por favor agrega una dirección antes de continuar")
-            return redirect("profile")
-        
-        # Calcular montos
-        amount = 0
+        famount = 0
         for p in cart_items:
             value = p.quantity * p.products.discounted_price
-            amount = amount + value
-        totalamount = amount + 4000.0
-        
-        context = {
-            'add': add,
-            'cart_items': cart_items,
-            'amount': amount,
-            'totalamount': totalamount
-        }
-        
-        return render(request, 'app/checkout.html', context)
+            famount = famount + value
+        totalamount = famount + 4000.0
+        return render(request, 'app/checkout.html', locals())
     
     def post(self, request):
-        customer_id = request.POST.get('custid')
-        
-        if not customer_id:
+        custid = request.POST.get('custid')
+        if not custid:
             messages.warning(request, "Por favor selecciona una dirección de envío")
             return redirect('checkout')
-            
-        # Verificar que el cliente existe
-        try:
-            customer = Customer.objects.get(id=customer_id, user=request.user)
-        except Customer.DoesNotExist:
-            messages.warning(request, "Dirección de envío no encontrada")
-            return redirect('checkout')
+        
+        # Aquí puedes guardar la dirección seleccionada para el pedido si es necesario
         
         # Redirigir a la página de pago
-        return redirect(f"/payment/?customer_id={customer_id}")
+        return redirect('payment')
 
 
 
@@ -269,3 +244,223 @@ def search_products(request):
 
 
 
+
+#-------------------------------------------------------------------------------------------------------
+
+
+
+# app/views.py
+from django.conf import settings
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.views import View
+from .models import Payment, OrderPlaced, Customer, Cart
+import uuid
+import json
+import requests
+
+class PaymentView(View):
+    def get(self, request):
+        user = request.user
+        cart_items = Cart.objects.filter(user=user)
+        
+        if not cart_items.exists():
+            messages.warning(request, "No tienes productos en tu carrito")
+            return redirect("showcart")
+        
+        # Calcular el monto total
+        amount = 0
+        for item in cart_items:
+            amount += item.quantity * item.products.discounted_price
+        
+        # Añadir costo de envío
+        total_amount = amount + 4000.0
+        
+        # Limitar el monto para respetar los límites de ePayco
+        # Suponiendo que el límite es 150000 COP (ajusta este valor según tu cuenta)
+        if total_amount > 150000:
+            messages.warning(request, "El monto máximo permitido es 150,000 COP. Se ha ajustado el monto.")
+            total_amount = 150000
+        
+        # Crear referencia única para el pago
+        reference = f"pago-{uuid.uuid4().hex[:8]}"
+        
+        # Guardar el pago en la base de datos
+        payment = Payment.objects.create(
+            user=user,
+            amount=total_amount,
+            epayco_ref_code=reference
+        )
+        
+        # Obtener datos del cliente
+        try:
+            customer = Customer.objects.get(user=user)
+            customer_name = customer.name
+            customer_email = user.email
+            customer_phone = str(customer.mobile)
+            customer_address = f"{customer.country}, {customer.city}"
+        except Customer.DoesNotExist:
+            messages.warning(request, "Por favor completa tu perfil antes de realizar un pago")
+            return redirect("profile")
+        
+        # Contexto para la plantilla
+        context = {
+            'payment': payment,
+            'amount': int(total_amount),  # ePayco requiere el monto en enteros
+            'reference': reference,
+            'description': f"Compra en PharmaPlus - {user.username}",
+            'customer_name': customer_name,
+            'customer_email': customer_email,
+            'customer_phone': customer_phone,
+            'customer_address': customer_address,
+            'epayco_key': settings.EPAYCO_PUBLIC_KEY,
+            'epayco_test': 'true' if settings.EPAYCO_TEST else 'false',
+        }
+        
+        return render(request, 'app/payment.html', context)
+
+@csrf_exempt
+def payment_response(request):
+    """Vista para manejar la respuesta del usuario desde ePayco"""
+    if request.method == 'GET':
+        # ePayco envía ref_payco en la URL
+        ref_payco = request.GET.get('ref_payco', '')
+        
+        if not ref_payco:
+            messages.error(request, "No se recibió referencia de pago")
+            return redirect('home')
+        
+        try:
+            # Primero, consultar el estado actual del pago en ePayco
+            # Esto es opcional pero recomendado para tener el estado más actual
+            api_url = f"https://secure.epayco.co/validation/v1/reference/{ref_payco}"
+            response = requests.get(api_url)
+            data = response.json()
+            
+            if 'success' in data and data['success']:
+                payment_info = data['data']
+                # Esta es la referencia de tu sistema, no la de ePayco
+                ref_code = payment_info.get('x_id_invoice')
+                status = payment_info.get('x_response')
+                
+                # Buscar el pago en tu sistema usando tu referencia
+                payment = Payment.objects.get(epayco_ref_code=ref_code)
+                
+                # Actualizar el estado del pago si es necesario
+                payment.epayco_status = status
+                payment.epayco_transaction_id = ref_payco
+                payment.save()
+                
+                context = {
+                    'payment': payment,
+                    'ref_code': ref_code,
+                    'status': status,
+                    'amount': payment.amount
+                }
+                
+                return render(request, 'app/payment_response.html', context)
+            else:
+                messages.error(request, "Error al verificar el pago")
+                return redirect('home')
+                
+        except Payment.DoesNotExist:
+            messages.error(request, "No se encontró el pago en nuestro sistema")
+            return redirect('home')
+        except Exception as e:
+            messages.error(request, f"Error: {str(e)}")
+            return redirect('home')
+
+@csrf_exempt
+@require_POST
+def payment_confirmation(request):
+    """
+    Vista para manejar la confirmación de pago desde ePayco.
+    Esta es la URL a la que ePayco enviará la confirmación de pago.
+    """
+    data = request.POST.dict()
+    
+    # Validar la autenticidad de la confirmación
+    # Aquí normalmente se verifica la firma usando la clave privada
+    
+    ref_payco = data.get('x_ref_payco')
+    transaction_id = data.get('x_transaction_id')
+    status = data.get('x_transaction_state')
+    
+    try:
+        payment = Payment.objects.get(epayco_ref_code=ref_payco)
+        payment.epayco_transaction_id = transaction_id
+        payment.epayco_status = status
+        
+        if status == 'Aceptada':
+            payment.paid = True
+            
+            # Procesar el pedido
+            user = payment.user
+            cart_items = Cart.objects.filter(user=user)
+            
+            try:
+                customer = Customer.objects.get(user=user)
+                
+                # Crear pedidos para cada item del carrito
+                for item in cart_items:
+                    OrderPlaced.objects.create(
+                        user=user,
+                        customer=customer,
+                        product=item.products,
+                        quantity=item.quantity,
+                        payment=payment
+                    )
+                
+                # Limpiar el carrito
+                cart_items.delete()
+                
+            except Customer.DoesNotExist:
+                # Manejar el caso donde no existe el cliente
+                pass
+        
+        payment.save()
+        return HttpResponse("Confirmación recibida", status=200)
+    
+    except Payment.DoesNotExist:
+        return HttpResponse("Pago no encontrado", status=404)
+
+from django.conf import settings
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
+from django.contrib import messages
+from django.views import View
+from django.db.models import Q, Count
+from .models import Customer, Product, Cart, Payment, OrderPlaced
+from .forms import CustomerRegistrationForm, CustomerProfileForm
+import uuid
+import json
+
+# En views.py
+def orders(request):
+    # Obtener todos los pedidos del usuario actual
+    orders = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
+    
+    # Agrupar los pedidos por ID de pago para mostrarlos juntos
+    orders_by_payment = {}
+    for order in orders:
+        if order.payment.id in orders_by_payment:
+            orders_by_payment[order.payment.id]['items'].append(order)
+        else:
+            orders_by_payment[order.payment.id] = {
+                'payment': order.payment,
+                'date': order.ordered_date,
+                'items': [order],
+                'total': order.payment.amount
+            }
+    
+    context = {
+        'orders_by_payment': orders_by_payment.values()
+    }
+    
+    return render(request, 'app/orders.html', context)
