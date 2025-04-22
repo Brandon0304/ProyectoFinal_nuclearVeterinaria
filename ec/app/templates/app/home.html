@@ -16,9 +16,6 @@
       <div class="carousel-item">
         <img src="{% static 'app/images/banners/b2.jpg' %}" class="d-block w-100" alt="...">
       </div>
-      <div class="carousel-item">
-        <img src="{% static 'app/images/banners/b3.jpg' %}" class="d-block w-100" alt="...">
-      </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -34,9 +31,8 @@
 {% block information %}
 <div class="container">
     <div class="row bg-success text-center p-5 text-white border-bottom shadow">
-        <h1>Products</h1>
-        <small class="fs-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Et, quasi? Laborum, maiores nisi! Ut doloribus modi nam ad, impedit deserunt dignissimos officiis repellendus mollitia dolore nisi porro vel at voluptatum.
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique nobis doloribus quasi quas quia voluptas facilis culpa minima. Sit temporibus veniam debitis ea obcaecati expedita voluptatum officiis provident minus ex?
+        <h1>Nuestros Productos</h1>
+        <small class="fs-5">En PharmaPlus encontrarás una amplia variedad de productos farmacéuticos y de cuidado personal para toda la familia. Contamos con las mejores marcas a precios competitivos y con entrega a domicilio en toda Colombia. Tu salud y bienestar son nuestra prioridad.
         </small>
     </div>
 </div>
@@ -45,14 +41,14 @@
 {% block main-content %}
 <br/><br/>
     <div class="container">
-        <h2 class="text-center">Dairy Products</h2>
+        <h2 class="text-center">Productos Farmacéuticos</h2>
         <br/><br/>
         <div class="row container">
             <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
                 <div class="goodnesssec buttermilk smbg">
                     <a href="{% url 'category' 'MD' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/buffalo-ghee.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Ghee</p>
+                        <img src="https://img.freepik.com/free-photo/medicine-capsules-global-health-with-geometric-pattern-digital-remix_53876-126742.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Medicamentos"> <p class="mlkpro">Medicamentos</p>
                     </div>
                 </a>
                 </div>
@@ -61,7 +57,7 @@
                 <div class="goodnesssec buttermilk curdbgpro">
                     <a href="{% url 'category' 'CM' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/mozzarellacheese.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Curd</p>
+                        <img src="https://img.freepik.com/free-photo/collection-beauty-products-with-copy-space_23-2148620110.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Cosméticos"> <p class="mlkpro">Cosméticos</p>
                     </div>
                 </a>
                 </div>
@@ -71,7 +67,7 @@
                 <div class="goodnesssec buttermilk buttermilk">
                     <a href="{% url 'category' 'VS' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/kulfi.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Curd</p>
+                        <img src="https://img.freepik.com/free-photo/nutritional-supplement-capsules-healthy-lifestyle_53876-127223.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Vitaminas"> <p class="mlkpro">Vitaminas y Suplementos</p>
                     </div>
                 </a>
                 </div>
@@ -83,18 +79,18 @@
         <div class="row container">
             <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
                 <div class="goodnesssec buttermilk smbg">
-                    <a href="#">
+                    <a href="{% url 'category' 'PB' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/buffalo-ghee.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Ghee</p>
+                        <img src="https://img.freepik.com/free-photo/baby-products-yellow-background-with-copy-space_23-2148593320.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Productos para bebés"> <p class="mlkpro">Productos para Bebés</p>
                     </div>
                 </a>
                 </div>
             </div>
             <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
                 <div class="goodnesssec buttermilk curdbgpro">
-                    <a href="#">
+                    <a href="{% url 'category' 'CP' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/mozzarellacheese.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Curd</p>
+                        <img src="https://img.freepik.com/free-photo/woman-getting-ready-take-bath_23-2149129737.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Cuidado personal"> <p class="mlkpro">Cuidado Personal</p>
                     </div>
                 </a>
                 </div>
@@ -102,9 +98,9 @@
 
             <div class="col-md-4 col-sm-4 mi-go wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s" style="animation-duration: 1s; animation-delay: 0.6s; animation-name: none;">
                 <div class="goodnesssec buttermilk buttermilk">
-                    <a href="#">
+                    <a href="{% url 'category' 'SN' %}">
                     <div class="goodnessseccont text-center">
-                        <img src="{% static 'app/images/product/kulfi.png' %}" class="img-responsive center-block" alt=""> <p class="mlkpro">Curd</p>
+                        <img src="https://www.duasrodas.com/blog/wp-content/uploads/2022/02/what-can-we-snack-on-904x602-1.jpg" class="img-responsive center-block" style="max-height: 200px; object-fit: cover;" alt="Snacks"> <p class="mlkpro">Snacks</p>
                     </div>
                 </a>
                 </div>

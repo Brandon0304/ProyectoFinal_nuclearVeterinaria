@@ -5,72 +5,171 @@
 <div class="container my-5">
     <div class="row justify-content-center">
     {% if cart %}
-    <h1 class="text-center mb-5">Carrito de Compras</h1>
-    <div class="col-12 col-md-10">
-        <div class="card mb-4">
+    <h1 class="text-center mb-5 text-success fw-bold">Carrito de Compras</h1>
+    <div class="col-12 col-lg-10">
+        <div class="card mb-4 shadow-sm border-0 rounded-3">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-shopping-basket text-success me-2"></i>Tus productos</h5>
+            </div>
             <div class="card-body">
                 {% for item in cart %}
                 <div class="row align-items-center py-3">
-                    <div class="col-sm-3 text-center">
-                        <img src="{{item.products.product_image.url}}" alt="" class="img-fluid img-thumbnail shadow-sm" style="max-height: 150px; max-width: 150px;" />
+                    <div class="col-md-3 text-center mb-3 mb-md-0">
+                        <img src="{{item.products.product_image.url}}" alt="{{item.products.title}}" class="img-fluid rounded shadow-sm" style="max-height: 120px; object-fit: contain;" />
                     </div>
-                    <div class="col-sm-7">
+                    <div class="col-md-6 mb-3 mb-md-0">
                         <div>
-                            <h5>{{item.products.title}}</h5>
-                            <p class="mb-2 text-muted small">{{item.products.description}}</p>
-                            <div class="my-3">
-                                <label for="quantity" class="me-2">Cantidad:</label>
-                                <a class="minus-cart btn px-2" pid={{item.products.id}}><i class="fas fa-minus-square fa-lg"></i></a>
-                                <span id="quantity" class="px-2">{{item.quantity}}</span>
-                                <a class="plus-cart btn px-2" pid={{item.products.id}}><i class="fas fa-plus-square fa-lg"></i></a>
+                            <h5 class="fw-bold text-success">{{item.products.title}}</h5>
+                            <p class="mb-2 text-muted small">{{item.products.description|truncatechars:120}}</p>
+                            <div class="my-3 d-flex align-items-center">
+                                <span class="me-3">Cantidad:</span>
+                                <div class="input-group input-group-sm" style="width: 120px;">
+                                    <a class="minus-cart btn btn-outline-secondary" pid={{item.products.id}}><i class="fas fa-minus"></i></a>
+                                    <span id="quantity" class="form-control text-center bg-white">{{item.quantity}}</span>
+                                    <a class="plus-cart btn btn-outline-secondary" pid={{item.products.id}}><i class="fas fa-plus"></i></a>
+                                </div>
                             </div>
-                            <div class="mt-3">
-                                <a href="#" class="remove-cart btn btn-sm btn-secondary" pid={{item.products.id}}>Remover Producto</a>
+                            <div class="mt-2">
+                                <a href="#" class="remove-cart btn btn-sm btn-outline-danger" pid={{item.products.id}}>
+                                    <i class="fas fa-trash-alt me-1"></i>Eliminar
+                                </a>
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-2 text-end">
-                        <p class="h5"><strong>COP. {{item.products.discounted_price}}</strong></p>
+                    <div class="col-md-3 text-md-end">
+                        <p class="fs-5 fw-bold text-success">COP ${{item.products.discounted_price|floatformat:0}}</p>
+                        {% if item.products.selling_price > item.products.discounted_price %}
+                            <p class="text-muted text-decoration-line-through small">COP ${{item.products.selling_price|floatformat:0}}</p>
+                            <span class="badge bg-danger">Oferta especial</span>
+                        {% endif %}
                     </div>
                 </div>
                 {% if not forloop.last %}
-                <hr class="text-muted">
+                <hr class="text-muted my-3">
                 {% endif %}
                 {% endfor %}
             </div>
         </div>
 
         <!-- Resumen del Carrito -->
-        <div class="card">
+        <div class="card shadow-sm border-0 rounded-3 mb-5">  <!-- Añadí mb-5 aquí -->
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0"><i class="fas fa-calculator text-success me-2"></i>Resumen de compra</h5>
+            </div>
             <div class="card-body">
-                <h3 class="mb-3">Total a pagar</h3>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                        <span>Cantidad</span>
-                        <span id="amount"><strong>COP. {{amount}}</strong></span>
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-2">
+                        <span>Subtotal ({{cart|length}} productos)</span>
+                        <span id="amount" class="fw-bold">COP ${{amount|floatformat:0}}</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                        <span>Valor del Envío</span>
-                        <span><strong>COP. 4000.0</strong></span>
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                        <span>Valor del envío</span>
+                        <span class="fw-bold">COP $4.000</span>
                     </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                    {% if cupones %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-2 text-success">
+                        <span>Descuento aplicado</span>
+                        <span class="fw-bold">- COP ${{descuento|floatformat:0}}</span>
+                    </li>
+                    {% endif %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 py-3 mb-2">
                         <div>
-                            <strong>Total</strong> <small>(con envío)</small>
+                            <strong class="fs-5">Total</strong>
                         </div>
-                        <span id="totalamount"><strong>Rs. {{totalamount}}</strong></span>
+                        <span id="totalamount" class="fs-5 fw-bold text-success">COP ${{totalamount|floatformat:0}}</span>
                     </li>
                 </ul>
+            
+                <!-- Métodos de pago -->
+                <div class="mb-4">
+                    <h6 class="mb-3">Métodos de pago disponibles:</h6>
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <img src="https://img.icons8.com/color/48/000000/visa.png" height="30" alt="Visa">
+                        <img src="https://img.icons8.com/color/48/000000/mastercard.png" height="30" alt="Mastercard">
+                        <img src="https://img.icons8.com/color/48/000000/amex.png" height="30" alt="American Express">
+                        <img src="https://cdn.icon-icons.com/icons2/2699/PNG/512/paypal_logo_icon_170865.png" height="30" alt="PayPal">
+                        <img src="https://logodownload.org/wp-content/uploads/2019/06/pse-logo-0.png" height="30" alt="PSE">
+                    </div>
+                </div>
+                
                 <div class="d-grid gap-2">
-                    <a href="{% url 'checkout' %}" class="btn btn-primary py-2">Ordenar</a>
+                    <a href="{% url 'checkout' %}" class="btn btn-success py-3 fw-bold">
+                        <i class="fas fa-check-circle me-2"></i>Proceder al pago
+                    </a>
+                    <a href="/" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Seguir comprando
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     {% else %}
-    <div class="col-12 text-center">
-        <h1 class="mb-5">Cart is Empty</h1>
+    <div class="col-12 text-center my-5 py-5">
+        <div class="mb-4">
+            <i class="fas fa-shopping-cart text-muted" style="font-size: 80px;"></i>
+        </div>
+        <h2 class="mb-3 text-muted">Tu carrito está vacío</h2>
+        <p class="text-muted mb-4">¿No sabes qué comprar? ¡Miles de productos te esperan!</p>
+        <a href="/" class="btn btn-success px-5 py-2">
+            <i class="fas fa-shopping-bag me-2"></i>Ir a comprar
+        </a>
     </div>
     {% endif %}
     </div>
 </div>
+
+<!-- Toasts para notificaciones -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050">
+    <div id="notificacion-toast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong class="me-auto">PharmaPlus</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toast-mensaje">
+            Producto actualizado correctamente.
+        </div>
+    </div>
+</div>
+
+<!-- Script para las notificaciones -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar notificación cuando cambia el carrito
+    const plusBtns = document.querySelectorAll('.plus-cart');
+    const minusBtns = document.querySelectorAll('.minus-cart');
+    const removeBtns = document.querySelectorAll('.remove-cart');
+    
+    function showNotification(message) {
+        const toastEl = document.getElementById('notificacion-toast');
+        document.getElementById('toast-mensaje').textContent = message;
+        const toast = new bootstrap.Toast(toastEl);
+        toast.show();
+    }
+    
+    plusBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            setTimeout(() => {
+                showNotification('Cantidad aumentada correctamente');
+            }, 300);
+        });
+    });
+    
+    minusBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            setTimeout(() => {
+                showNotification('Cantidad disminuida correctamente');
+            }, 300);
+        });
+    });
+    
+    removeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            setTimeout(() => {
+                showNotification('Producto eliminado del carrito');
+            }, 300);
+        });
+    });
+});
+</script>
 {% endblock main-content %}

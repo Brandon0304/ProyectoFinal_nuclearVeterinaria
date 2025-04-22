@@ -1,6 +1,6 @@
 {% extends "app/base.html" %}
 {% load static %}
-{% block title %}About{% endblock title %}
+{% block title %}Sobre Nosotros{% endblock title %}
 
 {% block banner-slider %}
 <div id="carouselExampleIndicators" class="carousel slide">
@@ -12,12 +12,21 @@
     <div class="carousel-inner">
       <div class="carousel-item active">
         <img src="{% static 'app/images/banners/b1.jpg' %}" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="bg-success bg-opacity-75 p-2 rounded">Comprometidos con tu salud</h2>
+        </div>
       </div>
       <div class="carousel-item">
         <img src="{% static 'app/images/banners/b2.jpg' %}" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="bg-success bg-opacity-75 p-2 rounded">Más de 10 años de experiencia</h2>
+        </div>
       </div>
       <div class="carousel-item">
         <img src="{% static 'app/images/banners/b3.jpg' %}" class="d-block w-100" alt="...">
+        <div class="carousel-caption d-none d-md-block">
+          <h2 class="bg-success bg-opacity-75 p-2 rounded">Calidad garantizada</h2>
+        </div>
       </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -28,24 +37,109 @@
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
       <span class="visually-hidden">Next</span>
     </button>
-  </div>
+</div>
 {% endblock banner-slider %}
 
 {% block main-content %}
-<div class="container mt-3">
-    <br>
-    <h2 class="text-center">Sobre Nosotros</h2>
-    <br>
-    <div class="row container">
-        <p class="fs-4 text-center">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo blanditiis, minima nobis consequatur non doloribus nulla sit excepturi doloremque rerum quibusdam accusamus eaque magnam, in ea eligendi obcaecati explicabo quia?</p>
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-lg-6 order-lg-2">
+            <div class="bg-light p-4 h-100 rounded shadow-sm">
+                <img src="https://img.freepik.com/free-photo/pharmacist-medical-store_23-2148518556.jpg" class="img-fluid rounded mb-4" alt="Equipo PharmaPlus">
+            </div>
+        </div>
+        <div class="col-lg-6 order-lg-1 d-flex align-items-center">
+            <div>
+                <h2 class="text-success fw-bold mb-4">Sobre PharmaPlus</h2>
+                <p class="fs-5">En PharmaPlus somos una cadena de farmacias comprometida con el bienestar y la salud de nuestros clientes desde 2015. Ofrecemos una amplia gama de productos farmacéuticos, cosméticos, vitaminas y suplementos, siempre con los más altos estándares de calidad.</p>
+                <p class="fs-5">Nuestro equipo está formado por profesionales farmacéuticos altamente capacitados que están siempre dispuestos a brindar asesoramiento personalizado a cada uno de nuestros clientes.</p>
+            </div>
+        </div>
     </div>
 
-    <br><br>
-    <h2 class="text-center">Misión</h2>
-    <br>
-    <div class="row container">
-        <p class="fs-4 text-center">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nemo blanditiis, minima nobis consequatur non doloribus nulla sit excepturi doloremque rerum quibusdam accusamus eaque magnam, in ea eligendi obcaecati explicabo quia?</p>
+    <div class="bg-success text-white p-5 rounded shadow my-5">
+        <h2 class="text-center fw-bold mb-4">Nuestra Misión</h2>
+        <p class="fs-4 text-center">Proporcionar a nuestros clientes productos farmacéuticos y de cuidado personal de alta calidad, junto con un servicio excepcional y asesoramiento profesional, contribuyendo así al mejoramiento de la salud y el bienestar de la comunidad.</p>
+    </div>
+
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <div class="bg-light p-4 h-100 rounded shadow-sm">
+                <img src="https://img.freepik.com/free-photo/pharmacist-holding-medicine-box-pharmacy-drugstore_1150-26582.jpg" class="img-fluid rounded mb-4" alt="Visión PharmaPlus">
+            </div>
+        </div>
+        <div class="col-lg-6 d-flex align-items-center">
+            <div>
+                <h2 class="text-success fw-bold mb-4">Nuestra Visión</h2>
+                <p class="fs-5">Ser reconocidos como la farmacia líder en Colombia, distinguiéndonos por la excelencia en el servicio, la innovación constante y el compromiso con la salud de nuestros clientes.</p>
+                <p class="fs-5">Buscamos expandir nuestra presencia digital para llegar a más hogares colombianos, ofreciendo siempre la mejor experiencia de compra y los mejores productos farmacéuticos.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-5">
+        <h2 class="text-success text-center fw-bold mb-4">Nuestros Valores</h2>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-heart text-success fa-3x mb-3"></i>
+                    <h4 class="card-title">Compromiso</h4>
+                    <p class="card-text">Estamos comprometidos con la salud y el bienestar de nuestros clientes, ofreciendo siempre productos de calidad y un servicio excepcional.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-certificate text-success fa-3x mb-3"></i>
+                    <h4 class="card-title">Calidad</h4>
+                    <p class="card-text">Garantizamos la autenticidad y calidad de todos nuestros productos, trabajando únicamente con proveedores confiables y certificados.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="fas fa-users text-success fa-3x mb-3"></i>
+                    <h4 class="card-title">Servicio</h4>
+                    <p class="card-text">Nuestro equipo está siempre dispuesto a brindar asesoramiento personalizado y atención de calidad a cada uno de nuestros clientes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mb-5">
+        <h2 class="text-success fw-bold mb-4">¿Por qué elegirnos?</h2>
+        <div class="row">
+            <div class="col-md-3 mb-4">
+                <div class="bg-light p-3 rounded shadow-sm h-100">
+                    <i class="fas fa-truck text-success fa-2x mb-3"></i>
+                    <h5>Envío a domicilio</h5>
+                    <p>Entregamos tus productos en toda Colombia.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="bg-light p-3 rounded shadow-sm h-100">
+                    <i class="fas fa-shield-alt text-success fa-2x mb-3"></i>
+                    <h5>Productos garantizados</h5>
+                    <p>Todos nuestros productos son originales y de alta calidad.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="bg-light p-3 rounded shadow-sm h-100">
+                    <i class="fas fa-credit-card text-success fa-2x mb-3"></i>
+                    <h5>Pagos seguros</h5>
+                    <p>Múltiples métodos de pago con la mayor seguridad.</p>
+                </div>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="bg-light p-3 rounded shadow-sm h-100">
+                    <i class="fas fa-headset text-success fa-2x mb-3"></i>
+                    <h5>Atención al cliente</h5>
+                    <p>Soporte disponible de lunes a domingo.</p>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<br><br>
 {% endblock main-content %}

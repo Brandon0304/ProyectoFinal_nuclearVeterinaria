@@ -1,28 +1,75 @@
 {% extends "app/base.html" %}
 {% load static %}
-{% block title %}Categoria{% endblock title %}
+{% block title %}{{product.title}}{% endblock title %}
 
 {% block main-content %}
-    <div class="container">
-        <div class="row flex justify-content-between">
-            <div class="img2 col-lg-5 mt-5">
-                <img src="{{product.product_image.url}}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="">
+<div class="container my-5 mb-5 pb-5">
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-lg-6 mb-4">
+            <div class="card border-0 shadow-sm rounded-3">
+                <img src="{{product.product_image.url}}" class="card-img-top img-fluid p-3" alt="{{product.title}}" style="object-fit: contain; max-height: 400px;">
             </div>
-            <div class="productdetail col-lg-5">
-                <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
-                <h5>COP.{{product.discounted_price}}/-</h5>
-                <small class="text-decoration-line-through text-muted fs-5"><del>COP. {{product.selling_price}}/- </small></del>
-                <br><br><h4>Características del producto</h4>
-                <ul class="fs-5" style="font-family: Rajdhani;">
-                    <li>{{product.description}}</li>
-                </ul>
-                <form action="/add-to-cart" class="d-inline">
+        </div>
+        
+        <!-- Detalles del producto -->
+        <div class="col-lg-6">
+            <h1 class="mb-3">{{product.title}}</h1>
+            
+            <div class="mb-4">
+                <h4 class="text-success mb-1">COP ${{product.discounted_price|floatformat:0}}</h4>
+                {% if product.selling_price > product.discounted_price %}
+                <p class="text-decoration-line-through text-muted">
+                    COP ${{product.selling_price|floatformat:0}}
+                </p>
+                <span class="badge bg-danger">Ahorro: COP ${{product.selling_price|floatformat:0|cut:","|add:"-"|add:product.discounted_price|floatformat:0|cut:","}}</span>
+                {% endif %}
+            </div>
+            
+            <div class="mb-4">
+                <h5 class="mb-3">Características del producto</h5>
+                <div class="card border-0 bg-light">
+                    <div class="card-body">
+                        <p class="mb-0">{{product.description}}</p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if product.composition %}
+            <div class="mb-4">
+                <h5 class="mb-2">Composición</h5>
+                <p>{{product.composition}}</p>
+            </div>
+            {% endif %}
+            
+            <div class="d-grid gap-2 d-md-block mb-4">
+                <form action="/add-to-cart" class="d-inline-block">
                     <input type="hidden" name="prod_id" value={{product.id}}/>
-                    <button type="submit" class="btn btn-primary shadow px-5 py-2">Añadir al Carrito</button>
+                    <button type="submit" class="btn btn-success btn-lg px-4 py-2">
+                        <i class="fas fa-shopping-cart me-2"></i>Añadir al Carrito
+                    </button>
                 </form>
-                <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Comprar Ahora</a>
-                <button class="btn btn-success shadow px-5 py-2 ms-4 plus-wishlist" pid={{product.id}}>Añadir a Favoritos</button>
+                
+            </div>
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="me-4">
+                    <i class="fas fa-shipping-fast text-success me-2"></i>
+                    <span>Envío a todo el país</span>
+                </div>
+                <div>
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    <span>Producto de calidad garantizada</span>
+                </div>
+            </div>
+            
+            <div class="card border-0 bg-light">
+                <div class="card-body">
+                    <h6 class="card-title"><i class="fas fa-info-circle me-2"></i>Información importante</h6>
+                    <small class="card-text">Las imágenes son de referencia. El precio puede variar según presentación y disponibilidad.</small>
+                </div>
             </div>
         </div>
     </div>
+</div>
 {% endblock main-content %}

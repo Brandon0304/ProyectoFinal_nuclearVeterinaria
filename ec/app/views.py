@@ -441,26 +441,3 @@ from .forms import CustomerRegistrationForm, CustomerProfileForm
 import uuid
 import json
 
-# En views.py
-def orders(request):
-    # Obtener todos los pedidos del usuario actual
-    orders = OrderPlaced.objects.filter(user=request.user).order_by('-ordered_date')
-    
-    # Agrupar los pedidos por ID de pago para mostrarlos juntos
-    orders_by_payment = {}
-    for order in orders:
-        if order.payment.id in orders_by_payment:
-            orders_by_payment[order.payment.id]['items'].append(order)
-        else:
-            orders_by_payment[order.payment.id] = {
-                'payment': order.payment,
-                'date': order.ordered_date,
-                'items': [order],
-                'total': order.payment.amount
-            }
-    
-    context = {
-        'orders_by_payment': orders_by_payment.values()
-    }
-    
-    return render(request, 'app/orders.html', context)

@@ -33,7 +33,7 @@
 {% endblock banner-slider %}
 
 {% block main-content %}
-<div class="container my-5">
+<div class="container my-5 mb-5 pb-5">
   <div class="row">
     <div class="col-lg-8 mx-auto">
       
@@ -76,16 +76,16 @@
         </div>
       </div>
 
-      <div class="card mt-4 shadow-sm">
+      <div class="card mt-4 shadow-sm mb-5">
         <div class="card-body">
           <h5 class="card-title text-center mb-3">Información de Contacto</h5>
           <div class="row text-center">
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3 mb-md-0">
               <i class="fas fa-map-marker-alt text-primary mb-2"></i>
               <p class="mb-0">Dirección</p>
               <small class="text-muted">Calle Ejemplo 123, Ciudad, País</small>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 mb-3 mb-md-0">
               <i class="fas fa-phone text-primary mb-2"></i>
               <p class="mb-0">Teléfono</p>
               <small class="text-muted">+57 123 456 7890</small>
@@ -101,6 +101,9 @@
 
     </div>
   </div>
+  
+  <!-- Espacio adicional para evitar que el footer se superponga -->
+  <div class="py-4"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>

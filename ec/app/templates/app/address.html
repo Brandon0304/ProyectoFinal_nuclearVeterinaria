@@ -2,31 +2,50 @@
 {% load static %}
 {% block title %}Dirección{% endblock title %}
 {% block main-content %}
-<div class="container my-5">
+<div class="container my-5 mb-5 pb-5">
     <div class="row">
-        <h3>Bienvenido <span class="text-capitalize">{{request.user}}</span></h3>
-        <div class="col-sm-2 border-end">
-            <ul class="list-unstyled">
-                <li class="d-grid"><a href="{% url 'profile' %}" class="btn ">Perfil</a></li>
-                <li class="d-grid"><a href="{% url 'address' %}" class="btn btn-primary">Información Usuario</a></li>
-            </ul>
+        <div class="col-12 mb-4">
+            <h3>Bienvenido <span class="text-capitalize">{{request.user}}</span></h3>
+        </div>
+        
+        <div class="col-sm-3 col-md-2 mb-4">
+            <div class="list-group">
+                <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">
+                    <i class="fas fa-user me-2"></i>Perfil
+                </a>
+                <a href="{% url 'address' %}" class="list-group-item list-group-item-action active">
+                    <i class="fas fa-address-card me-2"></i>Información Usuario
+                </a>
+            </div>
         </div>
 
-        <div class="col-sm-8 offset-sm-1">
+        <div class="col-sm-9 col-md-9">
             <div class="row">
                 {% for ad in add %}
-                    <div class="col-sm-6">
-                        <div class="card m-2">
-                            <div class="card-body">
-                                <h3>Usuario {{forloop.counter}}</h3>
-                                <p>Nombre: {{ad.name}}</p>
-                                <p>Pais: {{ad.country}}</p>
-                                <p>Celular: {{ad.mobile}}</p>
-                                <p>Ciudad: {{ad.city}}</p>
-                                <p>Departamento: {{ad.state}}</p>
-                                <p>Pin: {{ad.zipcode}}</p>
-                                <p class="text-center"><a href="{% url 'updateAddress' pk=ad.id %}" type="button" class="btn btn-success">Actualizar</a></p>
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Dirección {{forloop.counter}}</h5>
                             </div>
+                            <div class="card-body">
+                                <p><strong>Nombre:</strong> {{ad.name}}</p>
+                                <p><strong>País:</strong> {{ad.country}}</p>
+                                <p><strong>Celular:</strong> {{ad.mobile}}</p>
+                                <p><strong>Ciudad:</strong> {{ad.city}}</p>
+                                <p><strong>Departamento:</strong> {{ad.state}}</p>
+                                <p><strong>Código Postal:</strong> {{ad.zipcode}}</p>
+                            </div>
+                            <div class="card-footer bg-white text-center border-0">
+                                <a href="{% url 'updateAddress' pk=ad.id %}" class="btn btn-success">
+                                    <i class="fas fa-edit me-1"></i>Actualizar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center py-5">
+                        <div class="alert alert-info" role="alert">
+                            No tienes direcciones guardadas. ¡Agrega una ahora!
                         </div>
                     </div>
                 {% endfor %}
