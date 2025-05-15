@@ -1,0 +1,86 @@
+<!-- ec/app/templates/app/emails/order_placed.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .header {
+            background-color: #28a745;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            background-color: #f4f4f4;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>{{ title }}</h1>
+    </div>
+    <div class="content">
+        <p>Hola {{ user.username }},</p>
+        <p>{{ message }}</p>
+        
+        <h3>Detalles del Pedido:</h3>
+        <table>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+            </tr>
+            <tr>
+                <td>{{ order.product.title }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>COP. {{ order.product.discounted_price }}</td>
+            </tr>
+        </table>
+        
+        <p>Total: COP. {{ order.total_cost }}</p>
+        <p>Dirección de envío: {{ order.customer.name }}, {{ order.customer.country }}, {{ order.customer.city }}, {{ order.customer.state }} - {{ order.customer.zipcode }}</p>
+        
+        <a href="http://localhost:8000/orders/" class="button">Ver Mis Pedidos</a>
+    </div>
+    <div class="footer">
+        <p>&copy; 2025 PharmaPlus. Todos los derechos reservados.</p>
+        <p>Este es un correo automatizado, por favor no responda a este mensaje.</p>
+    </div>
+</body>
+</html>

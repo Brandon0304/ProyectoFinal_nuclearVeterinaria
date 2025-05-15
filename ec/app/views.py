@@ -227,21 +227,243 @@ def remove_cart(request):
         }
         return JsonResponse(data)
 
-def search_products(request):
-    query = request.GET.get('search', '')
-    if query:
-        # Buscar productos que coincidan con el título o la descripción
-        products = Product.objects.filter(
-            Q(title__icontains=query) | Q(description__icontains=query)
-        )
-    else:
-        products = []
-    
-    return render(request, 'app/search_results.html', {
-        'products': products,
-        'query': query
-    })
+# Añadir a views.py
 
+# Versión mejorada para añadir a views.py
+from django.db.models import Q
+from .search_utils import get_query_suggestions, find_similar_terms
+
+def search(request):
+    query = request.GET.get('q', '')
+    
+    if not query:
+        products = Product.objects.none()
+        return render(request, "app/search_results.html", {'query': query, 'products': products})
+    
+    # Mapeo de términos comunes en lenguaje natural a categorías
+    natural_language_mapping = {
+        # Medicamentos
+        'dolor': 'MD',
+        'cabeza': 'MD',
+        'fiebre': 'MD',
+        'gripe': 'MD',
+        'tos': 'MD',
+        'resfriado': 'MD',
+        'alergia': 'MD',
+        'pastilla': 'MD',
+        'medicina': 'MD',
+        'medicamento': 'MD',
+        'farmaco': 'MD',
+        'ibuprofeno': 'MD',
+        'paracetamol': 'MD',
+        'aspirina': 'MD',
+        'analgesico': 'MD',
+        'antibiotico': 'MD',
+        'antigripal': 'MD',
+        'jarabe': 'MD',
+        'gotas': 'MD',
+        'pomada': 'MD',
+        
+        # Condones
+        'condon': 'CN',
+        'preservativo': 'CN',
+        'proteccion': 'CN',
+        'sexual': 'CN',
+        'latex': 'CN',
+        
+        # Vitaminas y suplementos
+        'vitamina': 'VS',
+        'suplemento': 'VS',
+        'energia': 'VS',
+        'proteina': 'VS',
+        'calcio': 'VS',
+        'hierro': 'VS',
+        'fortaleza': 'VS',
+        'inmunidad': 'VS',
+        'omega': 'VS',
+        'magnesio': 'VS',
+        'zinc': 'VS',
+        'colageno': 'VS',
+        'multivitaminico': 'VS',
+        
+        # Cuidado personal
+        'jabon': 'CP',
+        'shampoo': 'CP',
+        'champu': 'CP',
+        'desodorante': 'CP',
+        'pasta': 'CP',
+        'dientes': 'CP',
+        'cepillo': 'CP',
+        'higiene': 'CP',
+        'personal': 'CP',
+        'crema': 'CP',
+        'locion': 'CP',
+        'corporal': 'CP',
+        'facial': 'CP',
+        'acne': 'CP',
+        'hidratante': 'CP',
+        'humectante': 'CP',
+        'protector': 'CP',
+        'solar': 'CP',
+        'afeitadora': 'CP',
+        'maquina': 'CP',
+        'afeitar': 'CP',
+        
+        # Para bebés
+        'bebe': 'PB',
+        'baby': 'PB',
+        'niño': 'PB',
+        'niña': 'PB',
+        'pañal': 'PB',
+        'leche': 'PB',
+        'formula': 'PB',
+        'infantil': 'PB',
+        'toallitas': 'PB',
+        'papilla': 'PB',
+        'talco': 'PB',
+        'chupete': 'PB',
+        'tetero': 'PB',
+        'biberon': 'PB',
+        
+        # Cosméticos
+        'maquillaje': 'CM',
+        'labial': 'CM',
+        'cosmetico': 'CM',
+        'cara': 'CM',
+        'uñas': 'CM',
+        'belleza': 'CM',
+        'rubor': 'CM',
+        'sombra': 'CM',
+        'rimel': 'CM',
+        'mascara': 'CM',
+        'pestañas': 'CM',
+        'lapiz': 'CM',
+        'delineador': 'CM',
+        'base': 'CM',
+        'polvo': 'CM',
+        'corrector': 'CM',
+        'esmalte': 'CM',
+        
+        # Snacks
+        'snack': 'SN',
+        'galleta': 'SN',
+        'chocolate': 'SN',
+        'botana': 'SN',
+        'dulce': 'SN',
+        'comida': 'SN',
+        'barra': 'SN',
+        'cereal': 'SN',
+        'energia': 'SN',
+        'chicle': 'SN',
+        'caramelo': 'SN',
+    }
+    
+    # Situaciones comunes y síntomas relacionados con categorías
+    symptoms_mapping = {
+        'dolor de cabeza': 'MD',
+        'no puedo dormir': 'MD',
+        'me duele': 'MD',
+        'tengo fiebre': 'MD',
+        'gripe': 'MD',
+        'estoy con gripe': 'MD',
+        'tos': 'MD',
+        'estoy resfriado': 'MD',
+        'alergia': 'MD',
+        'estomago': 'MD',
+        'dolor de estomago': 'MD',
+        'nauseas': 'MD',
+        'acidez': 'MD',
+        'diarrea': 'MD',
+        'estreñimiento': 'MD',
+        'infeccion': 'MD',
+        'picazon': 'MD',
+        'comezon': 'MD',
+        'dolor muscular': 'MD',
+        'dolor de espalda': 'MD',
+        'inflamacion': 'MD',
+        'cansancio': 'VS',
+        'fatiga': 'VS',
+        'necesito energia': 'VS',
+        'vitaminas': 'VS',
+        'suplementos': 'VS',
+        'reforzar defensas': 'VS',
+        'inmunidad': 'VS',
+        'huesos': 'VS',
+        'piel seca': 'CP',
+        'acne': 'CP',
+        'proteccion solar': 'CP',
+        'cuidado del bebe': 'PB',
+        'productos para bebe': 'PB',
+        'proteccion sexual': 'CN',
+        'anticonceptivo': 'CN',
+    }
+    
+    # Normalizar la consulta
+    query_lower = query.lower()
+    
+    # Verificar si hay términos incorrectos y corregirlos
+    corrected_query = query_lower
+    query_terms = query_lower.split()
+    for i, term in enumerate(query_terms):
+        similar_term = find_similar_terms(term, natural_language_mapping)
+        if similar_term and similar_term != term:
+            query_terms[i] = similar_term
+    
+    corrected_query = ' '.join(query_terms)
+    
+    # Buscar coincidencias en situaciones comunes primero
+    categories_to_search = set()
+    for symptom, category in symptoms_mapping.items():
+        if symptom in query_lower or symptom in corrected_query:
+            categories_to_search.add(category)
+    
+    # Si no encuentra situaciones, buscar palabras individuales
+    if not categories_to_search:
+        for word in corrected_query.split():
+            if word in natural_language_mapping:
+                categories_to_search.add(natural_language_mapping[word])
+    
+    # Si aún no hay categorías, intentar buscar con palabras originales
+    if not categories_to_search:
+        for word in query_lower.split():
+            if word in natural_language_mapping:
+                categories_to_search.add(natural_language_mapping[word])
+    
+    # Crear filtros para búsqueda
+    title_filter = Q(title__icontains=query)
+    desc_filter = Q(description__icontains=query)
+    
+    # Si hay categorías identificadas, añadir a los filtros
+    category_filter = Q(pk__lt=0)  # Iniciar con un filtro que no retorne nada
+    if categories_to_search:
+        category_filter = Q(category__in=categories_to_search)
+    
+    # Buscar productos con todos los filtros
+    products = Product.objects.filter(title_filter | desc_filter | category_filter).distinct()
+    
+    # Si no hay resultados con la búsqueda original, intentar con la consulta corregida
+    if not products.exists() and corrected_query != query_lower:
+        title_filter = Q(title__icontains=corrected_query)
+        desc_filter = Q(description__icontains=corrected_query)
+        products = Product.objects.filter(title_filter | desc_filter | category_filter).distinct()
+    
+    # Generar sugerencias de búsqueda
+    suggestions = []
+    if not products.exists():
+        all_terms = {**natural_language_mapping, **{k: v for k, v in symptoms_mapping.items()}}
+        suggestions = get_query_suggestions(query_lower, all_terms)
+    
+    # Verificar si hubo corrección de la consulta
+    did_you_mean = None
+    if corrected_query != query_lower and products.exists():
+        did_you_mean = corrected_query
+    
+    return render(request, "app/search_results.html", {
+        'query': query,
+        'products': products,
+        'suggestions': suggestions,
+        'did_you_mean': did_you_mean,
+    })
 
 
 

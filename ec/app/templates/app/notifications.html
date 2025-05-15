@@ -1,0 +1,55 @@
+<!-- ec/app/templates/app/notifications.html -->
+{% extends 'app/base.html' %}
+{% load static %}
+{% block title %}Notificaciones{% endblock title %}
+
+{% block main-content %}
+<div class="container my-5">
+    <div class="row">
+        <h3>Bienvenido <span class="text-capitalize">{{request.user}}</span></h3>
+        <div class="col-sm-2 border-end">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'profile' %}" class="btn">Perfil</a></li>
+                <li class="d-grid"><a href="{% url 'address' %}" class="btn">Información Usuario</a></li>
+                <li class="d-grid"><a href="{% url 'notifications' %}" class="btn btn-primary">Notificaciones <span class="badge bg-danger">{{unread_count}}</span></a></li>
+            </ul>
+        </div>
+
+        <div class="col-sm-8 offset-sm-1">
+            <h4>Tus Notificaciones</h4>
+            <hr>
+            {% if notifications %}
+                {% for notification in notifications %}
+                <div class="card mb-3 {% if not notification.is_read %}border-primary{% endif %}">
+                    <div class="card-header d-flex justify-content-between">
+                        <span>
+                            {% if notification.notification_type == 'order' %}
+                                <i class="fas fa-shopping-bag"></i>
+                            {% elif notification.notification_type == 'payment' %}
+                                <i class="fas fa-money-bill-wave"></i>
+                            {% elif notification.notification_type == 'shipping' %}
+                                <i class="fas fa-truck"></i>
+                            {% else %}
+                                <i class="fas fa-bell"></i>
+                            {% endif %}
+                            {{ notification.title }}
+                        </span>
+                        <small class="text-muted">{{ notification.created_at|date:"d M, Y H:i" }}</small>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ notification.message }}</p>
+                        {% if not notification.is_read %}
+                        <a href="{% url 'mark_notification_read' notification.id %}" class="btn btn-sm btn-outline-primary">Marcar como leída</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center">
+                    <p>No tienes notificaciones</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock main-content %}

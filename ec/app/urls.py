@@ -41,8 +41,7 @@ urlpatterns = [
     
     path('password-reset-complete/', auth_view.PasswordResetCompleteView.as_view(template_name='app/password_reset_complete.html'), name='password_reset_complete'),
     
-    path('search/', views.search_products, name='search_products'),
-    
+    path('search/', views.search, name='search'),    
     
     # app/urls.py
 
